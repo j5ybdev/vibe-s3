@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListAllMyBucketsResult
+	xmlns="http://s3.amazonaws.com/doc/2006-03-01/">
+	<Owner>
+		<ID>1234567</ID>
+		<DisplayName>1234567</DisplayName>
+	</Owner>
+	<Buckets>
+		<Bucket>
+			<Name>mybucket</Name>
+			<CreationDate>2020-06-25T01:42:48.245Z</CreationDate>
+		</Bucket>
+	</Buckets>
+</ListAllMyBucketsResult>

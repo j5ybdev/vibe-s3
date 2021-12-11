@@ -1,4 +1,4 @@
-module vibe.aws.sigv4;
+module vibes3.sigv4;
 
 import std.array;
 import std.algorithm;
@@ -6,12 +6,11 @@ import std.digest.sha;
 import std.range;
 import std.stdio;
 import std.string;
-
 static import vibe.textfilter.urlencode;
 
 
-immutable algorithm = "AWS4-HMAC-SHA256";
-immutable streaming_payload_hash = "STREAMING-" ~ algorithm ~ "-PAYLOAD";
+enum ALGORITHM = "AWS4-HMAC-SHA256";
+enum streaming_payload_hash = "STREAMING-" ~ ALGORITHM ~ "-PAYLOAD";
 
 struct CanonicalRequest 
 {
@@ -130,7 +129,7 @@ struct SignableRequest
 
 private string signableStringBase(in SignableRequest r) @safe
 {
-    return algorithm ~ "\n" ~
+    return ALGORITHM ~ "\n" ~
         r.dateString ~ "T" ~ r.timeStringUTC ~ "Z\n" ~
         r.dateString ~ "/" ~ r.region ~ "/" ~ r.service ~ "/aws4_request";
 }
@@ -163,7 +162,7 @@ unittest {
             cast(ubyte[])"Action=ListUsers&Version=2010-05-08");
 
     auto sampleString =
-        algorithm ~ "\n" ~
+        ALGORITHM ~ "\n" ~
         "20110909T233600Z\n" ~
         "20110909/us-east-1/iam/aws4_request\n" ~ 
         "3511de7e95d28ecd39e9513b642aee07e54f4941150d8df8bf94b328ef7e55e2";
@@ -241,7 +240,7 @@ unittest {
  */
 string createSignatureHeader(string accessKeyID, string credentialScope, string[string] reqHeaders, ubyte[] signature)
 {
-    return algorithm ~ " Credential=" ~ accessKeyID ~ "/" ~ credentialScope ~ "/aws4_request, SignedHeaders=" ~ signedHeaders(reqHeaders) ~ ", Signature=" ~ signature.toHexString().toLower();
+    return ALGORITHM ~ " Credential=" ~ accessKeyID ~ "/" ~ credentialScope ~ "/aws4_request, SignedHeaders=" ~ signedHeaders(reqHeaders) ~ ", Signature=" ~ signature.toHexString().toLower();
 }
 
 string dateFromISOString(string iso)
@@ -267,8 +266,7 @@ struct SignableChunk
 {
     static immutable string emptyHash;
 
-    static this()
-    {
+    shared static this() {
         emptyHash = hash([]);
     }
 
@@ -282,7 +280,7 @@ struct SignableChunk
 }
 
 string signableString(SignableChunk c) @safe {
-    return algorithm ~ "-PAYLOAD\n" ~
+    return ALGORITHM ~ "-PAYLOAD\n" ~
         c.dateString ~ "T" ~ c.timeStringUTC ~ "Z\n" ~
         c.dateString ~ "/" ~ c.region ~ "/" ~ c.service ~ "/aws4_request\n" ~
         c.seedHash ~ "\n" ~
@@ -324,7 +322,6 @@ unittest {
       
         PUT
         /examplebucket/chunkObject.txt
-
         content-encoding:aws-chunked
         content-length:66824
         host:s3.amazonaws.com
@@ -332,7 +329,6 @@ unittest {
         x-amz-date:20130524T000000Z
         x-amz-decoded-content-length:66560
         x-amz-storage-class:REDUCED_REDUNDANCY
-
         content-encoding;content-length;host;x-amz-content-sha256;x-amz-date;x-amz-decoded-content-length;x-amz-storage-class
         STREAMING-AWS4-HMAC-SHA256-PAYLOAD
      */

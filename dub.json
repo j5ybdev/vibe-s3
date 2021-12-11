@@ -3,14 +3,16 @@
 	"description": "vibe.d compatible AWS S3 client",
 	"copyright": "Copyright © 2015, see Authors",
 	"license": "MIT",
-	"authors": ["Rico Huijbers", "Yannick Koechlin", "Manuel Frischknecht", "Ilya Yaroshenko"],
+	"authors": ["Rico Huijbers", "Yannick Koechlin", "Manuel Frischknecht", "Ilya Yaroshenko", "Jeffrey Buhr"],
 	"targetType": "library",
 	"dependencies": {
-		"vibe-d": "~>0.8.0",
-		"kxml": "~>1.0.1",
-		"memutils": "~>0.4.7"
+		"dxml": "~>0.4.3",
+		"memutils": "~>1.0.4",
+		"vibe-d": ">=0.9.4",
+		"vibe-d:tls": ">=0.0.0"
 	},
 	"subConfigurations": {
-		"vibe-d": "vibe-core"
+		"vibe-d": "vibe-core",
+		"vibe-d:tls": "openssl-1.1"
 	}
 }

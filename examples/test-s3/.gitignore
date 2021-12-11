@@ -1,0 +1,16 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/tests3
+tests3.so
+tests3.dylib
+tests3.dll
+tests3.a
+tests3.lib
+tests3-test-*
+*.exe
+*.o
+*.obj
+*.lst
+run.sh

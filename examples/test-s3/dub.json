@@ -1,0 +1,16 @@
+{
+	"name": "tests3",
+	"description": "vibe-s3 library example",
+	"authors": [ "Jeffrey Buhr" ],
+	"copyright": "Copyright © 2021, Jeffrey Buhr",
+	"dependencies": {
+		"vibe-d": "0.9.4",
+		"vibe-d:tls": ">=0.0.0",
+		"vibe-s3": {
+			"path": "../../"
+	  }
+	},
+	"subConfigurations": {
+		"vibe-d:tls": "openssl-1.1"
+	}
+}

@@ -103,6 +103,7 @@ interface ObjectStoreClient {
         DownloadOptions options = DownloadOptions());
     void download(string resource, string saveTo,
         DownloadOptions options = DownloadOptions());
+    void deleteObject(string resource);
 }
 
 class NoOpObjectStoreClient : ObjectStoreClient {
@@ -127,6 +128,7 @@ class NoOpObjectStoreClient : ObjectStoreClient {
         DownloadOptions options = DownloadOptions()) {}
     void download(string resource, string saveTo,
         DownloadOptions options = DownloadOptions()) {}
+    void deleteObject(string resource) {}
 }
 
 
@@ -348,6 +350,15 @@ class S3Client : RESTClient, ObjectStoreClient {
         auto file = openFile(saveTo, FileMode.createTrunc);
         scope(exit) file.close();
         download(resource, file, options);
+    }
+
+    void deleteObject(string resource) {
+        InetHeaderMap headers;
+        headers[HDR_CONTENT_TYPE] = TEXT_PLAIN;
+        string[string] queryParams;
+        auto httpResp = doRequest(HTTPMethod.DELETE, resource, queryParams, headers);
+        httpResp.dropBody();
+        httpResp.destroy();
     }
 
     private string[string] listOptionsToParams(ref ListOptions options) {

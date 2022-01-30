@@ -56,9 +56,9 @@ void main() {
 			writefln("Downloaded file matches? %s", content == dlContent);
 
 			// cleanup
-			// No S3 delete yet so the file has to be removed from the bucket manually
 			if (exists(localFile)) remove(localFile);
 			if (exists(localFileCompare)) remove(localFileCompare);
+			s3.deleteObject(remoteFile);
 
 		} catch (Exception e) {
 			logError(e.msg);

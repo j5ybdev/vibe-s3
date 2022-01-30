@@ -3,6 +3,7 @@ module vibes3.s3model;
 import vibe.d : InetHeaderMap;
 import std.datetime;
 
+enum TEXT_PLAIN = "text/plain";
 enum OCTET_STREAM = "application/octet-stream";
 enum DEFAULT_MAX_ERR_RETRY = 2;
 enum DEFAULT_SCHEME = "https";

@@ -18,6 +18,7 @@ import vibe.data.json;
 import vibe.http.client;
 import vibe.inet.message;
 import vibe.http.common;
+import vibe.textfilter.urlencode : urlEncode;
 import std.algorithm;
 import std.datetime;
 import std.random;
@@ -29,7 +30,7 @@ import std.digest.sha;
 import std.math;
 import std.string;
 import std.format;
-import std.array: appender;
+import std.array: appender, split;
 import std.typecons: Tuple, tuple;
 import memutils.all;
 import vibes3.sigv4;
@@ -391,8 +392,6 @@ abstract class RESTClient {
     protected:
 
     static string buildQueryParameterString(in string[string] queryParameters) {
-        import vibe.textfilter.urlencode : urlEncode;
-
         auto stringBuilder = appender!string;
         int i = 0;
         foreach(qp; queryParameters.byKeyValue()) {
@@ -406,9 +405,7 @@ abstract class RESTClient {
             i++;
         }
         return stringBuilder.data;
-    }
-
-    
+    }    
 
     HTTPClientResponse doRequest(HTTPMethod method,
                                 string resource,
@@ -423,8 +420,6 @@ abstract class RESTClient {
         //Initialize credentials
         auto creds = m_credsSource.get();
 
-        const string queryString = buildQueryParameterString(queryParameters);
-
         auto retries = ExponentialBackoff(m_config.maxErrorRetry);
         foreach (triesLeft; retries) {
 
@@ -436,7 +431,14 @@ abstract class RESTClient {
                 }
             }
 
-            auto url = format("%s://%s%s?%s", m_config.scheme, endpoint, resource, queryString);
+            auto url = format("%s://%s%s?%s",
+                m_config.scheme,
+                endpoint,
+                urlEncode(resource, "/"),
+                buildQueryParameterString(queryParameters));
+
+            logDebug("%s %s", method, url);
+
             resp = requestHTTP(url, (scope HTTPClientRequest req) {
                 req.method = method;
                 
@@ -513,30 +515,30 @@ abstract class RESTClient {
         if (!resource.startsWith("/")) {
             resource = "/" ~ resource;
         }
-        auto urlStr = m_config.scheme ~ "://" ~ endpoint ~ resource;
+        const string resourceUrlPath = urlEncode(resource, "/");
+        auto urlStr = m_config.scheme ~ "://" ~ endpoint ~ resourceUrlPath;
         if (queryParameters !is null) {
             urlStr ~= "?" ~ buildQueryParameterString(queryParameters);
         }
         const URL url = URL.parse(urlStr);
         const bool useTls = url.schema == "https";
+        logDebug("%s %s", method, url);
 
         HTTPClientSettings settings = new HTTPClientSettings;
         settings.connectTimeout = 10.seconds;
         settings.readTimeout = 30.seconds;
 	    settings.defaultKeepAliveTimeout = 0.seconds; // closes connection immediately after receiving the data.
 
-        logDebug("doUpload to %s", urlStr);
-
         auto reqHandler = delegate(scope HTTPClientRequest req) {
             req.method = method;
             req.requestURI = url.pathString;
             
-            //Initialize the headers
+            // Initialize the headers
             foreach(key, value; headers.byKeyValue) {
                 req.headers[key] = value;
             }
 
-            //Since we might be doing retries, update the date
+            // Since we might be doing retries, update the date
             const string isoTimeString = currentTimeString();
             req.headers[HDR_AMZ_DATE] = isoTimeString;
             auto date = isoTimeString.dateFromISOString;
@@ -551,14 +553,14 @@ abstract class RESTClient {
             req.headers[HDR_AMZ_CONTENT_SHA256] = "STREAMING-AWS4-HMAC-SHA256-PAYLOAD";
             req.headers[HDR_AMZ_DEC_CONTENT_LEN] = payloadSize.to!string;
 
-            //Seems not to be working properly (S3 returns error if "Content-Length" is not used)
+            // Seems not to be working properly (S3 returns error if "Content-Length" is not used)
 //                req.headers["Transfer-Encoding"] = "chunked";
 //                if ("Content-Length" in headers)
 //                    req.headers.remove("Content-Length");
 
             auto canonicalRequest = CanonicalRequest(
                 method.to!string,
-                resource,
+                resourceUrlPath,
                 queryParameters,
                 [
                     HDR_HOST:                       req.headers[HDR_HOST],
@@ -792,7 +794,8 @@ private void signRequest(HTTPClientRequest req, string[string] queryParameters,
     ubyte[] stringToSign = cast(ubyte[]) signableString(signRequest);
     auto signature = sign(signKey, stringToSign);
 
-    const string authHeader = createSignatureHeader(creds.accessKeyID, credScope, signRequest.canonicalRequest.headers, signature);
+    const string authHeader = createSignatureHeader(creds.accessKeyID, credScope,
+        signRequest.canonicalRequest.headers, signature);
     req.headers[HDR_AUTH] = authHeader;
 }
 // Wed, 21 Oct 2015 07:28:00 GMT

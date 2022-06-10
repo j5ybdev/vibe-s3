@@ -32,7 +32,6 @@ import std.string;
 import std.format;
 import std.array: appender, split;
 import std.typecons: Tuple, tuple;
-import memutils.all;
 import vibes3.sigv4;
 import vibes3.s3model;
 import vibes3.s3xml;
@@ -629,9 +628,7 @@ abstract class RESTClient {
     string readResponse(HTTPClientResponse response) {
         auto stringBuilder = appender!string;
         auto reader = response.bodyReader;
-
-        auto buffer = ThreadMem.alloc!(ubyte[])(1024);
-        scope(exit) ThreadMem.free(buffer);
+        ubyte[1024] buffer;
 
         while(reader.leastSize > 0) {
             auto size = min(reader.leastSize,buffer.length);

@@ -7,7 +7,6 @@
 	"targetType": "library",
 	"dependencies": {
 		"dxml": "~>0.4.3",
-		"memutils": "~>1.0.4",
 		"vibe-d": ">=0.9.4",
 		"vibe-d:tls": ">=0.0.0"
 	},

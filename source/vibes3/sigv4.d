@@ -175,7 +175,7 @@ auto hmac_sha256(in ubyte[] key, in ubyte[] message)
 in {
     assert(key.length <= 64);
 }
-body {
+do {
     assert(key.length <= 64);
     SHA256 sha;
     ubyte[64] pad = 0x36;

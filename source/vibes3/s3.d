@@ -847,6 +847,10 @@ class FileInStream : RandomAccessStream {
       return fs.read(dst,mode);
    }
 
+   ulong write(scope const(ubyte)[] bytes, IOMode mode) @safe {
+      return fs.write(bytes, mode);
+   }
+
    bool empty() @property {
       return fs.empty();
    }

@@ -40,7 +40,7 @@ dub build
 Dependencies
 -----
 * Vibe.d
-* OpenSSL 1.1.x
+* OpenSSL 3
 
 Note for OS X: 
 you need to force use Homebrews OpenSSL

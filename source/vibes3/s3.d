@@ -843,11 +843,11 @@ class FileInStream : RandomAccessStream {
       return fs.peek();
    }
 
-   ulong read(scope ubyte[] dst, IOMode mode) @safe {
+   size_t read(scope ubyte[] dst, IOMode mode) @safe {
       return fs.read(dst,mode);
    }
 
-   ulong write(scope const(ubyte)[] bytes, IOMode mode) @safe {
+   size_t write(scope const(ubyte)[] bytes, IOMode mode) @safe {
       return fs.write(bytes, mode);
    }
 
@@ -895,9 +895,5 @@ class FileInStream : RandomAccessStream {
 
    void flush() @safe {
        fs.flush();
-   }
-
-   ulong write(const(ubyte[]) bytes, IOMode mode) @safe {
-       return fs.write(bytes,mode);
    }
 }

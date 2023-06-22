@@ -4,13 +4,10 @@
 	"authors": [ "Jeffrey Buhr" ],
 	"copyright": "Copyright © 2021, Jeffrey Buhr",
 	"dependencies": {
-		"vibe-d": "0.9.4",
+		"vibe-d": "0.9.6",
 		"vibe-d:tls": ">=0.0.0",
 		"vibe-s3": {
 			"path": "../../"
 	  }
-	},
-	"subConfigurations": {
-		"vibe-d:tls": "openssl-1.1"
 	}
 }

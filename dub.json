@@ -6,8 +6,8 @@
 	"authors": ["Rico Huijbers", "Yannick Koechlin", "Manuel Frischknecht", "Ilya Yaroshenko", "Jeffrey Buhr"],
 	"targetType": "library",
 	"dependencies": {
-		"dxml": "~>0.4.3",
-		"vibe-d": "0.9.7",
+		"dxml": "~>0.4.4",
+		"vibe-d": "0.9.8",
 		"vibe-d:tls": ">=0.0.0"
 	}
 }

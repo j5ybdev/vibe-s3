@@ -4,7 +4,7 @@
 	"authors": [ "Jeffrey Buhr" ],
 	"copyright": "Copyright © 2021, Jeffrey Buhr",
 	"dependencies": {
-		"vibe-d": "0.9.7",
+		"vibe-d": "0.9.8",
 		"vibe-d:tls": ">=0.0.0",
 		"vibe-s3": {
 			"path": "../../"
